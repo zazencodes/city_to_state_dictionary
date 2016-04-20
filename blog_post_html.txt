@@ -1,0 +1,81 @@
+I have used the Geopy and Geonamescache Python libraries to build a city-to-state dictionary for the USA. The dictionary is available in <a href="https://github.com/agalea91/city_to_state_dictionary">this Github repository</a> along with an ipython notebook file where it's built.
+<h3>Importing and using the dictionary</h3>
+The dictionary can be imported from the city_to_state.py module file as follows:
+<blockquote>from city_to_state load city_to_state_dict
+print('Number of cities =', len(city_to_state.keys())
+print(city_to_state['Long Branch'])</blockquote>
+&gt;&gt; Number of cities = 2361
+&gt;&gt; New Jersey
+
+It does not contain all cities in the USA, of which there are estimated to be ~20,000. Furthermore, there are about 200 instances where identically named cities in different states were found. In these cases, I arbitrarily assigned only one of the corresponding states to that city in the dictionary. An improved algorithm would be to pick the city with the largest population.
+<h3>Creating the dictionary yourself</h3>
+Below we'll go through my method for creating the dictionary. It took close to an hour for my algorithm (as described below) to run, so keep that in mind if you do this yourself! First we'll need to import the libraries:
+
+[code language="python"]
+# the Geonamescache library contains information
+# about continents, cities and US states
+import geonamescache
+
+# finding the state based on geotags
+# (i.e. longitude and latitude)
+from geopy.geocoders import Nominatim
+[/code]
+
+Next we accumulate the city names and their longitude and latitude coordinates into lists.
+
+[code language="python"]
+# get a dictionary of cities: 'c'
+gc = geonamescache.GeonamesCache()
+c = gc.get_cities()
+
+# extract the US city names and coordinates
+US_cities = [c[key]['name'] for key in list(c.keys())
+             if c[key]['countrycode'] == 'US']
+US_longs = [c[key]['longitude'] for key in list(c.keys())
+            if c[key]['countrycode'] == 'US']
+US_latts = [c[key]['latitude'] for key in list(c.keys())
+            if c[key]['countrycode'] == 'US']
+[/code]
+
+Unfortunately the states associations are not included in geonamescache, therefore we will have to look them up by feeding the coordinates into geopy. To this end, we define the following function:
+
+[code language="python"]
+def get_states(longs, latts):
+    ''' Input two 1D lists of floats/ints '''
+# a list of states
+    states = []
+
+    # use a coordinate tool from the geopy library
+    geolocator = Nominatim()
+    for lon, lat in zip(longs, latts):
+        try:
+            # get the state name
+            location = geolocator.reverse(str(lat)+', '+str(lon))
+            state = location.raw['address']['state']
+        except:
+            # return empty string
+            state = ''
+        states.append(state)
+return states
+[/code]
+
+Now all we need to do is call the function with our lists as input; this is the long part!
+
+[code language="python"]
+# find the states of each city
+# WARNING: this takes a while
+US_states = get_states(US_longs, US_latts)
+[/code]
+
+Finally, we create a dictionary linking cities as keys with their states.
+
+[code language="python"]
+city_to_state = {}
+for city, state in zip(US_cities, US_states):
+    if state:
+        city_to_state[city] = state
+[/code]
+
+If you go through the trouble of actually doing this, its probably worth your while to write the dictionary to a file so that you don't have to run the algorithm again.
+
+Thanks for reading! If you would like to discuss my code or have any questions or corrections, please write a comment. You are also welcome to email me at agalea91@gmail.com or tweet me @agalea91
