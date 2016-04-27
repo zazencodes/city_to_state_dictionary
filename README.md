@@ -6,3 +6,5 @@ I have also included a module file from which the dictionary can be imported usi
 from city_to_state import city_to_state_dict
 ```
 See also the `test.py` file for a simple example.
+
+More information can be found in my related [blog post](https://galeascience.wordpress.com/2016/03/23/us-city-to-state-python-dictionary/).
