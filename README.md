@@ -5,6 +5,13 @@ I have also included a module file from which the dictionary can be imported usi
 ```
 from city_to_state import city_to_state_dict
 ```
+Or
+You can import from the included pickle file using:
+```
+import pickle    
+with open('pickle/city_to_state.pkl', 'rb') as f:
+    city_to_state = pickle.load(f)
+```
 See also the `test.py` file for a simple example.
 
 More information can be found in my related [blog post](https://galeascience.wordpress.com/2016/03/23/us-city-to-state-python-dictionary/).
