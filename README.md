@@ -5,7 +5,7 @@ I have also included a module file from which the dictionary can be imported usi
 ```
 from city_to_state import city_to_state_dict
 ```
-Or <br>
+Or
 You can import from the included pickle file using:
 ```
 import pickle    
